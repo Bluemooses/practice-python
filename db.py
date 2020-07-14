@@ -1,4 +1,9 @@
+from flask import request, jsonify
 import psycopg2 as psyCon
+import flask
+app = flask.Flask(__name__)
+app.config["DEBUG"] = True
+cur = con.cursor()
 
 # connect to my db
 con = psyCon.connect(
@@ -8,26 +13,56 @@ con = psyCon.connect(
     password="postgres",
     port=5432
 )
+
+
+@app.route('/', methods=['GET'])
+def home():
+    cur.execute("select * from veggies")
+    rows = cur.fetchall()
+    for r in rows:
+        print(f"id {r[0]} veggie_name {r[1]}")
+    cur.close()
+    con.close()
+    return 'Hello'
+
+
+@app.route('/', method=['POST'])
+def next():
+    cur.execute(
+        "insert into 'gardenbed' ('user_id') values(%s) returning 'id';", (1))
+    rows = cur.fetchall()
+    for r in rows:
+        print(f"id {r[0]} garden_bed_id{r[1]}")
+    return 'Aloha'
+
+
+# get me veggies *crunch*
+@app.errorhandler(404)
+def page_not_found(e):
+    return "<h1>404</h1><p>The resource could not be found.</p>", 404
+
+
 # cursor
-cur = con.cursor()
 
 # execute query
-cur.execute("insert into veggies(id, veggie_name) values(%s, %s)", (1, 'Beet'))
-# cur.execute("insert into veggies(id, veggie_name) values(%s, %s), (1, "Beet")")
+# cur.execute("insert into veggies(id, veggie_name) values(%s, %s)", (1, 'Beet'))
 
-cur.execute("select id, veggie_name from veggies")
+# select veggies from table
+# cur.execute("select * from veggies")
 
-rows = cur.fetchall()
+# cur("delete from veggies(veggie_name) where gardenbed_id={})
+
+
+# print(rows)
 
 # loop through results
-for r in rows:
-    print(f"id {r[0]} veggie_name {r[1]}")
+
 
 # commit the transaction
-con.commit()
+# con.commit()
 
 # close the cursor
-cur.close()
 
 # close the connection
-con.close()
+# con.close()
+app.run()

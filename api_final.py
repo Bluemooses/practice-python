@@ -13,6 +13,12 @@ def dict_factory(cursor, row):
     return d
 
 
+@app.route('/api/veggies', methods=['GET'])
+def api_all():
+    veggies = cur.execute("select * from veggies").fetchall()
+    return jsonify(veggies)
+
+
 @app.route('/', methods=['GET'])
 def home():
     return '''<h1>Distant Reading Archive</h1>
