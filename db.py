@@ -14,6 +14,8 @@ con = psyCon.connect(
 )
 cur = con.cursor()
 
+# get me veggies *crunch*
+
 
 @app.route('/', methods=['GET'])
 def home():
@@ -33,16 +35,19 @@ def api_all():
     rows = cur.fetchall()
     for r in rows:
         print(f"id {r[0]} garden_bed_id{r[1]}")
+    cur.close()
+    con.close()
     return 'Aloha'
 
 
-@app.route('/:{id}')
+@app.route('/:{id}', methods=['DELETE'])
 def api_delete():
     cur.execute(
         "delete from 'gardenbed' ('user_id), ('gardenbed_id') where gardenbed_id = '%s';", f"{id}")
+    cur.close()
+    con.close()
     return print('success')
 
-# get me veggies *crunch*
 
 
 @app.errorhandler(404)
