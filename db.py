@@ -29,25 +29,27 @@ def home():
 
 
 @app.route('/best', methods=['POST', 'GET'])
-def api_all():
+def api_post():
+
+    # Here we could try [post], [get]
     cur.execute(
         "insert into 'gardenbed' ('user_id') values(%s) returning 'id';", (1))
     rows = cur.fetchall()
     for r in rows:
         print(f"id {r[0]} garden_bed_id{r[1]}")
+    con.commit()
     cur.close()
     con.close()
+
     return 'Aloha'
 
 
-@app.route('/:{id}', methods=['DELETE'])
+@app.route('/:{id}')
 def api_delete():
     cur.execute(
         "delete from 'gardenbed' ('user_id), ('gardenbed_id') where gardenbed_id = '%s';", f"{id}")
-    cur.close()
-    con.close()
+    con.commit()
     return print('success')
-
 
 
 @app.errorhandler(404)
