@@ -3,7 +3,6 @@ import psycopg2 as psyCon
 import flask
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
-cur = con.cursor()
 
 # connect to my db
 con = psyCon.connect(
@@ -13,6 +12,7 @@ con = psyCon.connect(
     password="postgres",
     port=5432
 )
+cur = con.cursor()
 
 
 @app.route('/', methods=['GET'])
@@ -26,8 +26,8 @@ def home():
     return 'Hello'
 
 
-@app.route('/', method=['POST'])
-def next():
+@app.route('/best', methods=['POST', 'GET'])
+def api_all():
     cur.execute(
         "insert into 'gardenbed' ('user_id') values(%s) returning 'id';", (1))
     rows = cur.fetchall()
@@ -36,7 +36,15 @@ def next():
     return 'Aloha'
 
 
+@app.route('/:{id}')
+def api_delete():
+    cur.execute(
+        "delete from 'gardenbed' ('user_id), ('gardenbed_id') where gardenbed_id = '%s';", f"{id}")
+    return print('success')
+
 # get me veggies *crunch*
+
+
 @app.errorhandler(404)
 def page_not_found(e):
     return "<h1>404</h1><p>The resource could not be found.</p>", 404
